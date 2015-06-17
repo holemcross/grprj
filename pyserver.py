@@ -21,6 +21,7 @@ class GrpojRequestHandler(BaseHTTPRequestHandler):
 		if self.path == "/records/name":
 			self.make_get_json_wrapper( sortByLastNameDSC(fetch_get_records()))
 
+
 		# GET /records/birthdate	
 		elif self.path == "/records/birthdate":
 			self.make_get_json_wrapper( sortByBirth(fetch_get_records()))
@@ -31,7 +32,16 @@ class GrpojRequestHandler(BaseHTTPRequestHandler):
 
 	def do_POST(self):
 		if self.path == "/records":
-			pass
+			ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+			if ctype == 'multipart/form-data':
+				postvars = cgi.parse_multipart(self.rfile, pdict)
+			elif ctype == 'application/x-www-form-urlencoded':
+				length = int(self.headers.getheader('content-length'))
+				postvars = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)
+			else:
+				postvars = {}
+			print(postvars)
+
 	def make_get_json_wrapper(self, jsonStr):
 
 		#Stringify

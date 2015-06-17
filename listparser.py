@@ -2,6 +2,7 @@
 # ListParser
 
 import getopt
+import sys
 from os import listdir
 from operator import attrgetter
 
@@ -34,13 +35,16 @@ def main():
 
 	#Load Files from Paths
 	for item in csvPathList:
-		masterList.append(loadCSVData(item))
+		masterList.append(parseDataStringWithDelimiter(item, ','))
 
 	for item in pipePathList:
-		masterList.append(loadPipeData(item))
+		masterList.append(parseDataStringWithDelimiter(item,'|'))
 
 	for item in spacePathList:
-		masterList.append(loadSpaceData(item))
+		masterList.append(parseDataStringWithDelimiter(item, ' '))
+
+	for item in jsonPathList:
+		masterList.append(parseDataStringWithDelimiter(item))
 
 	#Print Views
 	genderSorted = sortByGender(masterList)
@@ -72,7 +76,13 @@ def loadSpaceData(inPath):
 
 	return parseDataStringWithDelimiter(dataString, ' ')
 
+
+
 def parseDataStringWithDelimiter(dataString, delimiter):
+
+	dataObj = open( dataString, "r") #Read only
+	dataString = dataObj.read()
+	dataObj.close()
 
 	#TODO Implement validation
 	splitList = dataString.split( delimiter )
@@ -82,7 +92,8 @@ def parseDataStringWithDelimiter(dataString, delimiter):
 		# Work around for issue with setting value instead of reference
 		objList.append( obj.replace(' ', '') )
 
-	return Person(objList[0],objList[1],objList[2],objList[3],objList[4])
+	fullName = objList[1] + " " + objList[0]
+	return Person(objList[0],objList[1],objList[2],objList[3],objList[4], fullName)
 
 def parseCSV(dataString):
 	#Insert Work Here
@@ -115,24 +126,26 @@ def fetch_get_records():
 	for f in listdir(serverFilesDir):
 		if f.endswith(".txt"):
 			#TODO Insert Validation
-			masterList.append( loadCSVData(serverFilesDir+f))
+			masterList.append( parseDataStringWithDelimiter(serverFilesDir+f, ","))
 	return masterList
 	
 # Person Class
 class Person:
-	def __init__(self, lastName, firstName, gender, favColor, dob):
+	def __init__(self, lastName, firstName, gender, favColor, dob, fullName):
 		self.lastName = lastName
 		self.firstName = firstName
 		self.gender = gender
 		self.favColor = favColor
 		self.dob = dob
+		self.fullName = fullName
 
 	def __repr__(self):
-		return repr((self.lastName, self.firstName, self.gender, self.favColor, self.dob))
+		return repr((self.lastName, self.firstName, self.gender, self.favColor, self.dob, self.fullName))
 	def jsonDump(self):
-		return {'lastName': self.lastName, 'firstName': self.firstName, 'gender' : self.gender, 'favoriteColor':self.favColor, 'DateOfBirth': self.dob}
+		return {'lastName': self.lastName, 'firstName': self.firstName, 'gender' : self.gender, 'favoriteColor':self.favColor, 'DateOfBirth': self.dob, 'fullName' : self.fullName}
 	def jsonDumps(self):
-		return "{'lastName':"+self.lastName+",'firstName':"+self.firstName+",'gender':"+self.gender+",'favoriteColor':"+self.favColor+",'DateOfBirth:"+self.dob+"}"
+		fullName = self.firstName + " " + self.lastName
+		return "{'lastName':"+self.lastName+",'firstName':"+self.firstName+",'gender':"+self.gender+",'favoriteColor':"+self.favColor+",'DateOfBirth:"+self.dob+", 'fullName':"+fullName+"}"
 		
 # Main
 if __name__ == '__main__':
