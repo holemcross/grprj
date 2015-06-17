@@ -1,5 +1,6 @@
 # Python File
 # ListParser
+from operator import attrgetter
 
 def main(argv):
 	src ="";
@@ -54,14 +55,11 @@ def parseDataStringWithDelimiter(dataString, delimiter):
 	#TODO Implement validation
 	splitList = dataString.split( delimiter )
 	objList = []
-	print(objList)
-
 	for obj in splitList:
 		# Append strips to new list
 		# Work around for issue with setting value instead of reference
 		objList.append( obj.replace(' ', '') )
-	
-	print(objList)
+
 	return Person(objList[0],objList[1],objList[2],objList[3],objList[4])
 
 def parseCSV(dataString):
@@ -78,7 +76,7 @@ def pareseSpace(data):
 
 def sortByGender(personList):
 	#Then last name
-	return sorted(personList, key=attrgetter('gender','lastName','firstname'))
+	return sorted(personList, key=attrgetter('gender','lastName','firstName'))
 
 def sortByBirth(personList):
 	#Ascending
