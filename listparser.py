@@ -52,16 +52,17 @@ def parseData(data):
 def parseDataStringWithDelimiter(dataString, delimiter):
 
 	#TODO Implement validation
-	objArray = dataString.split( delimiter )
-	print(objArray)
-	#Strip
-	#[obj.strip() for obj in objArray]
-	for obj in objArray:
-		obj.strip()
-		#print(obj)
-	print(objArray)
-	print("Magical Trevor Is So Clever".strip(' '))
-	return Person(objArray[0],objArray[1],objArray[2],objArray[3],objArray[4])
+	splitList = dataString.split( delimiter )
+	objList = []
+	print(objList)
+
+	for obj in splitList:
+		# Append strips to new list
+		# Work around for issue with setting value instead of reference
+		objList.append( obj.replace(' ', '') )
+	
+	print(objList)
+	return Person(objList[0],objList[1],objList[2],objList[3],objList[4])
 
 def parseCSV(dataString):
 	#Insert Work Here
