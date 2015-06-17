@@ -2,6 +2,7 @@
 # ListParser
 
 import getopt
+from os import listdir
 from operator import attrgetter
 
 def main():
@@ -50,22 +51,22 @@ def main():
 	print(birthSorted)
 	print(lastNameSorted)
 
-def loadCSVData(path):
-	dataObj = open( path, "r") #Read only
+def loadCSVData(inPath):
+	dataObj = open( inPath, "r") #Read only
 	dataString = dataObj.read()
 	dataObj.close()
 
 	return parseDataStringWithDelimiter(dataString, ',')
 
-def loadPipeData(path):
-	dataObj = open( path, "r") #Read only
+def loadPipeData(inPath):
+	dataObj = open( inPath, "r") #Read only
 	dataString = dataObj.read()
 	dataObj.close()
 
 	return parseDataStringWithDelimiter(dataString, '|')
 
-def loadSpaceData(path):
-	dataObj = open( path, "r") #Read only
+def loadSpaceData(inPath):
+	dataObj = open( inPath, "r") #Read only
 	dataString = dataObj.read()
 	dataObj.close()
 
@@ -107,6 +108,16 @@ def sortByLastNameDSC(personList):
 	#descending
 	return sorted(personList, key=attrgetter('lastName', 'firstName'), reverse=True)
 
+def fetch_get_records():
+	serverFilesDir = "serverFiles/"
+	masterList = []
+	# Assumes CSV Files
+	for f in listdir(serverFilesDir):
+		if f.endswith(".txt"):
+			#TODO Insert Validation
+			masterList.append( loadCSVData(serverFilesDir+f))
+	return masterList
+	
 # Person Class
 class Person:
 	def __init__(self, lastName, firstName, gender, favColor, dob):
@@ -115,9 +126,14 @@ class Person:
 		self.gender = gender
 		self.favColor = favColor
 		self.dob = dob
+
 	def __repr__(self):
 		return repr((self.lastName, self.firstName, self.gender, self.favColor, self.dob))
-
+	def jsonDump(self):
+		return {'lastName': self.lastName, 'firstName': self.firstName, 'gender' : self.gender, 'favoriteColor':self.favColor, 'DateOfBirth': self.dob}
+	def jsonDumps(self):
+		return "{'lastName':"+self.lastName+",'firstName':"+self.firstName+",'gender':"+self.gender+",'favoriteColor':"+self.favColor+",'DateOfBirth:"+self.dob+"}"
+		
 # Main
 if __name__ == '__main__':
 	main()
