@@ -1,22 +1,54 @@
 # Python File
 # ListParser
+
+import getopt
 from operator import attrgetter
 
-def main(argv):
-	src ="";
+def main():
+
+	csvPathList = []
+	pipePathList =[]
+	spacePathList =[]
+	csvList = []
+	pipeList =[]
+	spaceList =[]
+	masterList =[]
+
 	try:
-		opts, args =getopt.getopt(argv, "hg:d", ["help", "source="])
+		opts, args =getopt.getopt(sys.argv[1:], "hc:", ["help", "csv="])
 	except getopt.GetoptError:
+		print("Error!")
 		usage()
 		sys.exit(2)
 	for opt, arg in opts:
-		if opt in ("h", "--help"):
+		if opt in ("-h", "--help"):
 			usage()
 			sys.exit()
-		elif opt in ("-s", "--source"):
-			src = arg
+		elif opt in ("-c", "--commaseperated"):
+			csvPathList.append(arg)
+		elif opt in ("-p","--pipe"):
+			pipePathList.append(arg)
+		elif opt in ("-s", "--space"):
+			spacePathList.append(arg)
 
-	# DO WORK HERE
+	#Load Files from Paths
+	for item in csvPathList:
+		masterList.append(loadCSVData(item))
+
+	for item in pipePathList:
+		masterList.append(loadPipeData(item))
+
+	for item in spacePathList:
+		masterList.append(loadSpaceData(item))
+
+	#Print Views
+	genderSorted = sortByGender(masterList)
+	birthSorted = sortByBirth(masterList)
+	lastNameSorted = sortByLastNameDSC(masterList)
+
+	print(genderSorted)
+	print(birthSorted)
+	print(lastNameSorted)
 
 def loadCSVData(path):
 	dataObj = open( path, "r") #Read only
@@ -25,30 +57,19 @@ def loadCSVData(path):
 
 	return parseDataStringWithDelimiter(dataString, ',')
 
-def parseData(data):
-	#Insert Work Here
-	dataObj = open( data, "r") #Read only
+def loadPipeData(path):
+	dataObj = open( path, "r") #Read only
 	dataString = dataObj.read()
 	dataObj.close()
 
-	csvArray = parseCSV(dataString)
-	pipeArray = parsePipe(dataString)
-	pareseSpace = pareseSpace(dataString)
+	return parseDataStringWithDelimiter(dataString, '|')
 
-	mergedList = []
-	mergedList.append(csvArray)
-	mergedList.append(pipeArray)
-	mergedList.append(pareseSpace)
+def loadSpaceData(path):
+	dataObj = open( path, "r") #Read only
+	dataString = dataObj.read()
+	dataObj.close()
 
-	#Print Sort
-	genderSorted = sortByGender(mergedList)
-	birthSorted = sortByBirth(mergedList)
-	lastNameSorted = sortByLastNameDSC(mergedList)
-
-	print(genderSorted)
-	print(birthSorted)
-	print(lastNameSorted)
-
+	return parseDataStringWithDelimiter(dataString, ' ')
 
 def parseDataStringWithDelimiter(dataString, delimiter):
 
@@ -97,3 +118,6 @@ class Person:
 	def __repr__(self):
 		return repr((self.lastName, self.firstName, self.gender, self.favColor, self.dob))
 
+# Main
+if __name__ == '__main__':
+	main()
